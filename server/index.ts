@@ -60,6 +60,13 @@ io.on("connection", (socket: Socket) => {
         updateState();
     });
 
+    socket.on("update question", (question: string) => {
+        console.log("new question", question);
+        state.question = question;
+        socket.emit("ok");
+        updateState();
+    });
+
     socket.emit("update state", state);
 });
 

@@ -16,11 +16,11 @@ var ServerState = /** @class */ (function () {
 var state = new ServerState();
 var HTTPS = path.resolve("").includes("/var/www");
 var httpServer = HTTPS
-    ? (0, https_1.createServer)({
+    ? https_1.createServer({
         key: fs.readFileSync("privkey.pem"),
         cert: fs.readFileSync("cert.pem")
     })
-    : (0, http_1.createServer)();
+    : http_1.createServer();
 var io = new socket_io_1.Server(httpServer, {
     cors: {
         origin: ["http://localhost:5000", "https://buonanno.tech"],
@@ -52,6 +52,12 @@ io.on("connection", function (socket) {
     socket.on("am typing", function () {
         if (state.typingTimes[myUserNumber] >= 0)
             state.typingTimes[myUserNumber] = Date.now();
+        updateState();
+    });
+    socket.on("update question", function (question) {
+        console.log("new question", question);
+        state.question = question;
+        socket.emit("ok");
         updateState();
     });
     socket.emit("update state", state);
